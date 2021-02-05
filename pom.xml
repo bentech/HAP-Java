@@ -5,7 +5,7 @@
 	<artifactId>hap</artifactId>
 	<name>hap-java</name>
 	<description>Homekit Accessory Protocol for Java</description>
-	<version>2.0.0-snapshot</version>
+	<version>2.0.1-rako</version>
 	<packaging>jar</packaging>
 	<url>https://github.com/hap-java/HAP-Java</url>
 
