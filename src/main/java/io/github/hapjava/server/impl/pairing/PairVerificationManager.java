@@ -109,20 +109,21 @@ public class PairVerificationManager {
     byte[] clientLtpk =
         authInfo.getUserPublicKey(
             authInfo.getMac() + new String(clientUsername, StandardCharsets.UTF_8));
-    if (clientLtpk == null) {
-      throw new Exception("Unknown user: " + new String(clientUsername, StandardCharsets.UTF_8));
-    }
 
     Encoder encoder = TypeLengthValueUtils.getEncoder();
+    encoder.add(MessageType.STATE, (short) 4);
+    if (clientLtpk == null) {
+      logger.error("Unknown user: {}", new String(clientUsername, StandardCharsets.UTF_8));
+      return new OkResponse(encoder.toByteArray());
+    }
+
     if (new EdsaVerifier(clientLtpk).verify(material, clientSignature)) {
-      encoder.add(MessageType.STATE, (short) 4);
       logger.trace("Completed pair verification for " + registry.getLabel());
       return new UpgradeResponse(
           encoder.toByteArray(),
           createKey("Control-Write-Encryption-Key"),
           createKey("Control-Read-Encryption-Key"));
     } else {
-      encoder.add(MessageType.ERROR, (short) 4);
       logger.warn("Invalid signature. Could not pair " + registry.getLabel());
       return new OkResponse(encoder.toByteArray());
     }

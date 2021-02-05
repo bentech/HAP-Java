@@ -32,6 +32,8 @@ public class PairingUpdateController {
       if (!authInfo.hasUser()) {
         advertiser.setDiscoverable(true);
       }
+      // } else if (method == 5) { // List pairing
+
     } else {
       throw new RuntimeException("Unrecognized method: " + method);
     }
