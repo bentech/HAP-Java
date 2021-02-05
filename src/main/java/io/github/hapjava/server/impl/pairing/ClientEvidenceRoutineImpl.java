@@ -8,9 +8,7 @@ import java.security.NoSuchAlgorithmException;
 
 class ClientEvidenceRoutineImpl implements ClientEvidenceRoutine {
 
-  public ClientEvidenceRoutineImpl() {
-    // TODO Auto-generated constructor stub
-  }
+  public ClientEvidenceRoutineImpl() {}
 
   /**
    * Calculates M1 according to the following formula:
@@ -27,10 +25,10 @@ class ClientEvidenceRoutineImpl implements ClientEvidenceRoutine {
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException("Could not locate requested algorithm", e);
     }
-    digest.update(SrpHandler.bigIntegerToUnsignedByteArray(cryptoParams.N));
+    digest.update(BigIntegerUtils.bigIntegerToBytes(cryptoParams.N));
     byte[] hN = digest.digest();
 
-    digest.update(SrpHandler.bigIntegerToUnsignedByteArray(cryptoParams.g));
+    digest.update(BigIntegerUtils.bigIntegerToBytes(cryptoParams.g));
     byte[] hg = digest.digest();
 
     byte[] hNhg = xor(hN, hg);
@@ -38,14 +36,14 @@ class ClientEvidenceRoutineImpl implements ClientEvidenceRoutine {
     digest.update(ctx.userID.getBytes(StandardCharsets.UTF_8));
     byte[] hu = digest.digest();
 
-    digest.update(SrpHandler.bigIntegerToUnsignedByteArray(ctx.S));
+    digest.update(BigIntegerUtils.bigIntegerToBytes(ctx.S));
     byte[] hS = digest.digest();
 
     digest.update(hNhg);
     digest.update(hu);
-    digest.update(SrpHandler.bigIntegerToUnsignedByteArray(ctx.s));
-    digest.update(SrpHandler.bigIntegerToUnsignedByteArray(ctx.A));
-    digest.update(SrpHandler.bigIntegerToUnsignedByteArray(ctx.B));
+    digest.update(BigIntegerUtils.bigIntegerToBytes(ctx.s));
+    digest.update(BigIntegerUtils.bigIntegerToBytes(ctx.A));
+    digest.update(BigIntegerUtils.bigIntegerToBytes(ctx.B));
     digest.update(hS);
     BigInteger ret = new BigInteger(1, digest.digest());
     return ret;
