@@ -156,7 +156,13 @@ public class HomekitServer {
     }
     root.addAccessory(
         new HomekitBridge(
-            label, serialNumber, model, manufacturer, firmwareRevision, hardwareRevision));
+            label,
+            serialNumber,
+            model,
+            manufacturer,
+            firmwareRevision,
+            hardwareRevision,
+            PROTOCOL_VERSION));
     return root;
   }
 
