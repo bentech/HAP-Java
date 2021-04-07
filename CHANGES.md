@@ -16,6 +16,10 @@
 * Support for FilterMaintenance. Can be used as a linked service for an Air Purifier  [#124](https://github.com/hap-java/HAP-Java/pull/124)
 * Update crypto libs [#130](https://github.com/hap-java/HAP-Java/pull/130)
 
+## Fixes
+
+* Fix for re-advertising service when using alternative jMDNS implementations.
+
 # HAP-Java 1.1.5
 
 ## Fixes

@@ -1,0 +1,38 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven and Deploy
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 11 for Maven Central
+      uses: actions/setup-java@v1
+      with:
+        java-version: '11'
+        architecture: x64
+        server-id: ossrh
+        gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+        server-username: MAVEN_USERNAME
+        server-password: MAVEN_CENTRAL_TOKEN
+    - name: Setup git profile
+      run: |
+        git config --global user.name github-actions
+        git config --global user.email github-actions@github.com
+    - name: Publish Snapshot to Maven Central
+      run: mvn deploy -B -Possrh
+      env:
+        MAVEN_USERNAME: hap-java-dev
+        MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+    - name: Publish site
+      run: mvn -B site-deploy -Dusername=github-actions -Dpassword=${{ secrets.GITHUB_TOKEN }}
