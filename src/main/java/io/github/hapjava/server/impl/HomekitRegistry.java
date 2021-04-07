@@ -19,7 +19,7 @@ public class HomekitRegistry {
   private static final Logger logger = LoggerFactory.getLogger(HomekitRegistry.class);
 
   private final String label;
-  private final Map<Integer, HomekitAccessory> accessories;
+  private final Map<Long, HomekitAccessory> accessories;
   private final Map<HomekitAccessory, Map<Integer, Service>> services = new HashMap<>();
   private final Map<HomekitAccessory, Map<Integer, Characteristic>> characteristics =
       new HashMap<>();
@@ -71,11 +71,11 @@ public class HomekitRegistry {
     return accessories.values();
   }
 
-  public Map<Integer, Service> getServices(Integer aid) {
+  public Map<Integer, Service> getServices(Long aid) {
     return Collections.unmodifiableMap(services.get(accessories.get(aid)));
   }
 
-  public Map<Integer, Characteristic> getCharacteristics(Integer aid) {
+  public Map<Integer, Characteristic> getCharacteristics(Long aid) {
     Map<Integer, Characteristic> characteristics = this.characteristics.get(accessories.get(aid));
     if (characteristics == null) {
       return Collections.emptyMap();
