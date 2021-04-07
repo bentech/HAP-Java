@@ -30,7 +30,7 @@ public class AccessoryController {
   public HttpResponse listing() throws Exception {
     JsonArrayBuilder accessories = Json.createArrayBuilder();
 
-    Map<Integer, List<CompletableFuture<JsonObject>>> accessoryServiceFutures = new HashMap<>();
+    Map<Long, List<CompletableFuture<JsonObject>>> accessoryServiceFutures = new HashMap<>();
     for (HomekitAccessory accessory : registry.getAccessories()) {
       List<CompletableFuture<JsonObject>> serviceFutures = new ArrayList<>();
 
@@ -47,8 +47,8 @@ public class AccessoryController {
       accessoryServiceFutures.put(accessory.getId(), serviceFutures);
     }
 
-    Map<Integer, JsonArrayBuilder> serviceArrayBuilders = new HashMap<>();
-    for (Entry<Integer, List<CompletableFuture<JsonObject>>> entry :
+    Map<Long, JsonArrayBuilder> serviceArrayBuilders = new HashMap<>();
+    for (Entry<Long, List<CompletableFuture<JsonObject>>> entry :
         accessoryServiceFutures.entrySet()) {
       JsonArrayBuilder arr = Json.createArrayBuilder();
       for (CompletableFuture<JsonObject> future : entry.getValue()) {
