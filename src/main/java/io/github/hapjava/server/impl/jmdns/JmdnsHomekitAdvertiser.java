@@ -21,6 +21,7 @@ public class JmdnsHomekitAdvertiser {
   private boolean discoverable = true;
   private static final Logger logger = LoggerFactory.getLogger(JmdnsHomekitAdvertiser.class);
   private boolean isAdvertising = false;
+  private boolean isStarted = false;
 
   private String label;
   private String mac;
@@ -50,6 +51,11 @@ public class JmdnsHomekitAdvertiser {
     logger.trace("Advertising accessory " + label);
 
     registerService();
+
+    if (isStarted) {
+      return;
+    }
+    this.isStarted = true;
 
     Runtime.getRuntime()
         .addShutdownHook(
