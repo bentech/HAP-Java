@@ -17,6 +17,7 @@ public class HomekitHttpServer implements HomekitWebHandler {
     if (this.service != null) {
       this.service.shutdown();
     }
+    this.service = null;
   }
 
   public HomekitHttpServer(InetAddress localAddress, int port, int nThreads) {
