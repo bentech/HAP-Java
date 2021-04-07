@@ -98,12 +98,14 @@ public class JmdnsHomekitAdvertiser {
 
   private void unregisterService() {
     jmdns.unregisterService(buildServiceInfo());
+    isAdvertising = false;
   }
 
   private void registerService() throws IOException {
     logger.info("Registering " + SERVICE_TYPE + " on port " + port);
     jmdns.registerService(buildServiceInfo());
     stateIndex++;
+    isAdvertising = true;
   }
 
   private ServiceInfo buildServiceInfo() {
