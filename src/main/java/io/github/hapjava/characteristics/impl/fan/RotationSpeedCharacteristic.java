@@ -23,7 +23,7 @@ public class RotationSpeedCharacteristic extends IntegerCharacteristic
         "Rotation Speed",
         0,
         100,
-        "%",
+        "percentage",
         Optional.of(getter),
         Optional.of(setter),
         Optional.of(subscriber),

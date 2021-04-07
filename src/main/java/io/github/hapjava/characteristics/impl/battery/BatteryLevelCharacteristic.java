@@ -21,7 +21,7 @@ public class BatteryLevelCharacteristic extends IntegerCharacteristic
         "battery level",
         0,
         100,
-        "%",
+        "percentage",
         Optional.of(getter),
         Optional.empty(),
         Optional.of(subscriber),

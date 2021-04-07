@@ -19,7 +19,7 @@ public class ServiceLabelIndexCharacteristic extends IntegerCharacteristic
         "service label index",
         0,
         100,
-        "%",
+        "percentage",
         Optional.of(getter),
         Optional.empty(),
         Optional.empty(),

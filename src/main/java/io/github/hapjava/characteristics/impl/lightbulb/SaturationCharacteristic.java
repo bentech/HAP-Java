@@ -24,7 +24,7 @@ public class SaturationCharacteristic extends FloatCharacteristic
         0,
         100,
         1,
-        "%",
+        "percentage",
         Optional.of(getter),
         Optional.of(setter),
         Optional.of(subscriber),

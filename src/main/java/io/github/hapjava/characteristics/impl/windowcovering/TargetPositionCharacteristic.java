@@ -23,7 +23,7 @@ public class TargetPositionCharacteristic extends IntegerCharacteristic
         "target position",
         0,
         100,
-        "%",
+        "percentage",
         Optional.of(getter),
         Optional.of(setter),
         Optional.of(subscriber),

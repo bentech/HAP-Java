@@ -25,7 +25,7 @@ public class HumidityDehumidifierThresholdCharacteristic extends FloatCharacteri
         0,
         100,
         1,
-        "%",
+        "percentage",
         Optional.of(getter),
         Optional.of(setter),
         Optional.of(subscriber),

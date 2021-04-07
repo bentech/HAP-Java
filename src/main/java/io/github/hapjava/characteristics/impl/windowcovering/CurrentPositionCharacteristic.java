@@ -21,7 +21,7 @@ public class CurrentPositionCharacteristic extends IntegerCharacteristic
         "current position",
         0,
         100,
-        "%",
+        "percentage",
         Optional.of(getter),
         Optional.empty(),
         Optional.of(subscriber),

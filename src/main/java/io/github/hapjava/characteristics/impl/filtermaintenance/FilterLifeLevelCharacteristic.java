@@ -21,7 +21,7 @@ public class FilterLifeLevelCharacteristic extends FloatCharacteristic
         0,
         100,
         1,
-        "%",
+        "percentage",
         Optional.of(getter),
         Optional.empty(),
         Optional.of(subscriber),
