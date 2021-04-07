@@ -1,5 +1,6 @@
 package io.github.hapjava.server.impl.jmdns;
 
+import static io.github.hapjava.server.impl.HomekitServer.PROTOCOL_VERSION_BONJOUR;
 import static io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils.generateSHA512Hash;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ public class JmdnsHomekitAdvertiser {
   private String setupId;
   private int port;
   private int configurationIndex;
+  private int stateIndex;
 
   public JmdnsHomekitAdvertiser(JmDNS jmdns) {
     this.jmdns = jmdns;
@@ -36,15 +38,14 @@ public class JmdnsHomekitAdvertiser {
   }
 
   public synchronized void advertise(
-      String label, String mac, int port, int configurationIndex, String setupId) throws Exception {
-    if (isAdvertising) {
-      throw new IllegalStateException("HomeKit advertiser is already running");
-    }
+      String label, String mac, int port, int configurationIndex, int stateIndex, String setupId)
+      throws Exception {
     this.label = label;
     this.mac = mac;
     this.port = port;
     this.setupId = setupId;
     this.configurationIndex = configurationIndex;
+    this.stateIndex = stateIndex;
 
     logger.trace("Advertising accessory " + label);
 
@@ -57,11 +58,14 @@ public class JmdnsHomekitAdvertiser {
                   logger.trace("Stopping advertising in response to shutdown.");
                   jmdns.unregisterAllServices();
                 }));
-    isAdvertising = true;
   }
 
   public synchronized void stop() {
     unregisterService();
+  }
+
+  public void setStateIndex(int stateIndex) {
+    this.stateIndex = stateIndex;
   }
 
   public synchronized void setDiscoverable(boolean discoverable) throws IOException {
@@ -93,6 +97,7 @@ public class JmdnsHomekitAdvertiser {
   private void registerService() throws IOException {
     logger.info("Registering " + SERVICE_TYPE + " on port " + port);
     jmdns.registerService(buildServiceInfo());
+    stateIndex++;
   }
 
   private ServiceInfo buildServiceInfo() {
@@ -103,9 +108,10 @@ public class JmdnsHomekitAdvertiser {
     props.put("md", label);
     props.put("sh", generateSHA512Hash(setupId + mac));
     props.put("c#", Integer.toString(configurationIndex));
-    props.put("s#", "1");
+    props.put("s#", Integer.toString(stateIndex));
     props.put("ff", "0");
     props.put("ci", "1");
+    props.put("pv", PROTOCOL_VERSION_BONJOUR);
     return ServiceInfo.create(SERVICE_TYPE, label, port, 1, 1, props);
   }
 }

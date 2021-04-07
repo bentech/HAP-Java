@@ -34,6 +34,7 @@ public class HomekitRoot {
   private final SubscriptionManager subscriptions = new SubscriptionManager();
   private boolean started = false;
   private int configurationIndex = 1;
+  private int stateIndex = 1;
 
   HomekitRoot(
       String label, HomekitWebHandler webHandler, InetAddress localhost, HomekitAuthInfo authInfo)
@@ -123,7 +124,12 @@ public class HomekitRoot {
               try {
                 refreshAuthInfo();
                 advertiser.advertise(
-                    label, authInfo.getMac(), port, configurationIndex, authInfo.getSetupId());
+                    label,
+                    authInfo.getMac(),
+                    port,
+                    configurationIndex,
+                    stateIndex,
+                    authInfo.getSetupId());
               } catch (Exception e) {
                 throw new RuntimeException(e);
               }
@@ -175,6 +181,13 @@ public class HomekitRoot {
     this.configurationIndex = revision;
     if (this.started) {
       advertiser.setConfigurationIndex(revision);
+    }
+  }
+
+  public void setStateIndex(int stateIndex) throws IOException {
+    this.stateIndex = stateIndex;
+    if (this.started) {
+      advertiser.setStateIndex(stateIndex);
     }
   }
 

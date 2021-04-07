@@ -78,7 +78,7 @@ public class HomekitRootTest {
     when(authInfo.getSetupId()).thenReturn(SETUPID);
 
     root.start();
-    verify(advertiser).advertise(eq(LABEL), eq(mac), eq(PORT), eq(1), eq(SETUPID));
+    verify(advertiser).advertise(eq(LABEL), eq(mac), eq(PORT), eq(1), eq(1), eq(SETUPID));
   }
 
   @Test

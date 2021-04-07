@@ -27,6 +27,9 @@ import javax.jmdns.JmDNS;
  */
 public class HomekitServer {
 
+  public static final String PROTOCOL_VERSION = "1.1.0";
+  public static final String PROTOCOL_VERSION_BONJOUR = "1.1";
+
   private final HomekitHttpServer http;
   private final InetAddress localAddress;
   private final JmDNS jmdns;
