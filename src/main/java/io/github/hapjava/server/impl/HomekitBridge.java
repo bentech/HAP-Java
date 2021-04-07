@@ -21,7 +21,8 @@ public class HomekitBridge implements Bridge {
       String model,
       String manufacturer,
       String firmwareRevision,
-      String hardwareRevision) {
+      String hardwareRevision,
+      String version) {
     this.label = label;
     this.serialNumber = serialNumber;
     this.model = model;
@@ -55,8 +56,14 @@ public class HomekitBridge implements Bridge {
     return CompletableFuture.completedFuture(firmwareRevision);
   }
 
+  public CompletableFuture<String> getHardwareRevision() {
+    return CompletableFuture.completedFuture(hardwareRevision);
+  }
+
   @Override
   public Collection<Service> getServices() {
+    //    return Collections.singleton(new ProtocolInformationService(this));
+
     return Collections.emptyList();
   }
 
