@@ -104,7 +104,6 @@ public class JmdnsHomekitAdvertiser {
   private void registerService() throws IOException {
     logger.info("Registering " + SERVICE_TYPE + " on port " + port);
     jmdns.registerService(buildServiceInfo());
-    stateIndex++;
     isAdvertising = true;
   }
 
