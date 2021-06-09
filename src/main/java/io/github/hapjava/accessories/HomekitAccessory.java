@@ -22,7 +22,7 @@ public interface HomekitAccessory {
    *
    * @return the unique identifier.
    */
-  int getId();
+  long getId();
 
   /**
    * Returns a name to display in iOS.

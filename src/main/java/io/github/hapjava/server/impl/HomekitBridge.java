@@ -68,7 +68,7 @@ public class HomekitBridge implements Bridge {
   }
 
   @Override
-  public int getId() {
+  public long getId() {
     return 1;
   }
 }

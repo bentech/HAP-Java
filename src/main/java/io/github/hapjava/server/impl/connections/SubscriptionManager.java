@@ -26,7 +26,7 @@ public class SubscriptionManager {
   private int nestedBatches = 0;
 
   public synchronized void addSubscription(
-      int aid,
+      long aid,
       int iid,
       EventableCharacteristic characteristic,
       HomekitClientConnection connection) {
@@ -111,7 +111,7 @@ public class SubscriptionManager {
     }
   }
 
-  public synchronized void publish(int accessoryId, int iid, EventableCharacteristic changed) {
+  public synchronized void publish(long accessoryId, int iid, EventableCharacteristic changed) {
     final Set<HomekitClientConnection> subscribers = subscriptions.get(changed);
     if ((subscribers == null) || (subscribers.isEmpty())) {
       LOGGER.debug("No subscribers to characteristic {} at accessory {} ", changed, accessoryId);

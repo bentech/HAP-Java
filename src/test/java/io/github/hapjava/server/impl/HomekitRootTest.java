@@ -33,7 +33,7 @@ public class HomekitRootTest {
   @Before
   public void setup() throws Exception {
     accessory = mock(HomekitAccessory.class);
-    when(accessory.getId()).thenReturn(2);
+    when(accessory.getId()).thenReturn(2l);
     webHandler = mock(HomekitWebHandler.class);
     when(webHandler.start(any())).thenReturn(CompletableFuture.completedFuture(PORT));
     advertiser = mock(JmdnsHomekitAdvertiser.class);
@@ -107,7 +107,7 @@ public class HomekitRootTest {
 
   @Test(expected = IndexOutOfBoundsException.class)
   public void testAddIndexOneAccessory() throws Exception {
-    when(accessory.getId()).thenReturn(1);
+    when(accessory.getId()).thenReturn(1l);
     root.addAccessory(accessory);
   }
 }

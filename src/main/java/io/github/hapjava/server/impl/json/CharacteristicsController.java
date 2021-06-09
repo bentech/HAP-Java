@@ -39,7 +39,7 @@ public class CharacteristicsController {
         logger.warn("Unexpected characteristics request: " + uri);
         return new NotFoundResponse();
       }
-      int aid = Integer.parseInt(parts[0]);
+      long aid = Long.parseLong(parts[0]);
       int iid = Integer.parseInt(parts[1]);
       JsonObjectBuilder characteristic = Json.createObjectBuilder();
       Map<Integer, Characteristic> characteristicMap = registry.getCharacteristics(aid);
@@ -75,7 +75,7 @@ public class CharacteristicsController {
             Json.createReader(bais).readObject().getJsonArray("characteristics");
         for (JsonValue value : jsonCharacteristics) {
           JsonObject jsonCharacteristic = (JsonObject) value;
-          int aid = jsonCharacteristic.getInt("aid");
+          long aid = jsonCharacteristic.getJsonNumber("aid").longValue();
           int iid = jsonCharacteristic.getInt("iid");
           Characteristic characteristic = registry.getCharacteristics(aid).get(iid);
 

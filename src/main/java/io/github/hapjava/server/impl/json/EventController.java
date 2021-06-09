@@ -12,7 +12,7 @@ import javax.json.JsonObjectBuilder;
 
 public class EventController {
 
-  public HttpResponse getMessage(int accessoryId, int iid, EventableCharacteristic changed)
+  public HttpResponse getMessage(long accessoryId, long iid, EventableCharacteristic changed)
       throws Exception {
     JsonArrayBuilder characteristics = Json.createArrayBuilder();
 
