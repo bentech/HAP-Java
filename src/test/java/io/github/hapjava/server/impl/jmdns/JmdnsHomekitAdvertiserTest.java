@@ -1,7 +1,6 @@
 package io.github.hapjava.server.impl.jmdns;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -24,12 +23,6 @@ public class JmdnsHomekitAdvertiserTest {
     subject = new JmdnsHomekitAdvertiser(jmdns);
   }
 
-  @Test
-  public void testAdvertiseTwiceFails() throws Exception {
-    advertise();
-    assertThatThrownBy(() -> advertise()).isNotNull();
-  }
-
   /*
    * Verify that the unregister call is for the initial registered service
    * when changing discoverability causes advertising to be toggled.
@@ -39,7 +32,7 @@ public class JmdnsHomekitAdvertiserTest {
     subject.setDiscoverable(false);
     advertise();
     subject.setDiscoverable(true);
-    assertThat(getArgumentFromUnregister().getPropertyString("sf")).isEqualTo("0");
+    assertThat(getArgumentFromUnregister().getPropertyString("sf")).isEqualTo("1");
   }
 
   /*
@@ -51,7 +44,7 @@ public class JmdnsHomekitAdvertiserTest {
     subject.setConfigurationIndex(1);
     advertise();
     subject.setConfigurationIndex(2);
-    assertThat(getArgumentFromUnregister().getPropertyString("c#")).isEqualTo("1");
+    assertThat(getArgumentFromUnregister().getPropertyString("c#")).isEqualTo("2");
   }
 
   private ServiceInfo getArgumentFromUnregister() {
