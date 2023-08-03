@@ -1,7 +1,10 @@
 package io.github.hapjava.server.impl;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -13,9 +16,8 @@ import io.github.hapjava.server.HomekitWebHandler;
 import io.github.hapjava.server.impl.http.HomekitClientConnectionFactory;
 import io.github.hapjava.server.impl.jmdns.JmdnsHomekitAdvertiser;
 import java.util.concurrent.CompletableFuture;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HomekitRootTest {
 
@@ -30,7 +32,7 @@ public class HomekitRootTest {
 
   private static final String LABEL = "Test Label";
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     accessory = mock(HomekitAccessory.class);
     when(accessory.getId()).thenReturn(2l);
@@ -42,37 +44,37 @@ public class HomekitRootTest {
   }
 
   @Test
-  public void verifyRegistryAdded() throws Exception {
+  void verifyRegistryAdded() throws Exception {
     root.addAccessory(accessory);
-    Assert.assertTrue(
-        "Registry does not contain accessory",
-        root.getRegistry().getAccessories().contains(accessory));
+    assertTrue(
+        root.getRegistry().getAccessories().contains(accessory),
+        "Registry does not contain accessory");
   }
 
   @Test
-  public void verifyRegistryRemoved() throws Exception {
+  void verifyRegistryRemoved() throws Exception {
     root.addAccessory(accessory);
     root.removeAccessory(accessory);
-    Assert.assertFalse(
-        "Registry still contains accessory",
-        root.getRegistry().getAccessories().contains(accessory));
+    assertFalse(
+        root.getRegistry().getAccessories().contains(accessory),
+        "Registry still contains accessory");
   }
 
   @Test
-  public void testWebHandlerStarts() throws Exception {
+  void testWebHandlerStarts() throws Exception {
     root.start();
     verify(webHandler).start(any(HomekitClientConnectionFactory.class));
   }
 
   @Test
-  public void testWebHandlerStops() throws Exception {
+  void testWebHandlerStops() throws Exception {
     root.start();
     root.stop();
     verify(webHandler).stop();
   }
 
   @Test
-  public void testAdvertiserStarts() throws Exception {
+  void testAdvertiserStarts() throws Exception {
     final String mac = "00:00:00:00:00:00";
     when(authInfo.getMac()).thenReturn(mac);
     when(authInfo.getSetupId()).thenReturn(SETUPID);
@@ -82,14 +84,14 @@ public class HomekitRootTest {
   }
 
   @Test
-  public void testAdvertiserStops() throws Exception {
+  void testAdvertiserStops() throws Exception {
     root.start();
     root.stop();
     verify(advertiser).stop();
   }
 
   @Test
-  public void testAddAccessoryResetsWeb() {
+  void testAddAccessoryResetsWeb() {
     root.start();
     verify(webHandler, never()).resetConnections();
     root.addAccessory(accessory);
@@ -97,7 +99,7 @@ public class HomekitRootTest {
   }
 
   @Test
-  public void testRemoveAccessoryResetsWeb() {
+  void testRemoveAccessoryResetsWeb() {
     root.addAccessory(accessory);
     root.start();
     verify(webHandler, never()).resetConnections();
@@ -105,9 +107,13 @@ public class HomekitRootTest {
     verify(webHandler).resetConnections();
   }
 
-  @Test(expected = IndexOutOfBoundsException.class)
-  public void testAddIndexOneAccessory() throws Exception {
-    when(accessory.getId()).thenReturn(1l);
-    root.addAccessory(accessory);
+  @Test
+  void testAddIndexOneAccessory() throws Exception {
+    assertThrows(
+        IndexOutOfBoundsException.class,
+        () -> {
+          when(accessory.getId()).thenReturn(1l);
+          root.addAccessory(accessory);
+        });
   }
 }

@@ -8,8 +8,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 public class JmdnsHomekitAdvertiserTest {
@@ -17,7 +17,7 @@ public class JmdnsHomekitAdvertiserTest {
   JmdnsHomekitAdvertiser subject;
   JmDNS jmdns;
 
-  @Before
+  @BeforeEach
   public void setup() throws UnknownHostException, IOException {
     jmdns = mock(JmDNS.class);
     subject = new JmdnsHomekitAdvertiser(jmdns);
@@ -28,7 +28,7 @@ public class JmdnsHomekitAdvertiserTest {
    * when changing discoverability causes advertising to be toggled.
    */
   @Test
-  public void testSetDiscoverableAfterAdvertise() throws Exception {
+  void testSetDiscoverableAfterAdvertise() throws Exception {
     subject.setDiscoverable(false);
     advertise();
     subject.setDiscoverable(true);
@@ -40,7 +40,7 @@ public class JmdnsHomekitAdvertiserTest {
    * when changing the config index causes advertising to be toggled.
    */
   @Test
-  public void testSetConfigurationIndex() throws Exception {
+  void testSetConfigurationIndex() throws Exception {
     subject.setConfigurationIndex(1);
     advertise();
     subject.setConfigurationIndex(2);
