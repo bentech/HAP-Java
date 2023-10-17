@@ -1,6 +1,7 @@
 package io.github.hapjava.server.impl.jmdns;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -8,8 +9,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 public class JmdnsHomekitAdvertiserTest {
@@ -17,10 +18,16 @@ public class JmdnsHomekitAdvertiserTest {
   JmdnsHomekitAdvertiser subject;
   JmDNS jmdns;
 
-  @BeforeEach
+  @Before
   public void setup() throws UnknownHostException, IOException {
     jmdns = mock(JmDNS.class);
     subject = new JmdnsHomekitAdvertiser(jmdns);
+  }
+
+  @Test
+  public void testAdvertiseTwiceFails() throws Exception {
+    advertise();
+    assertThatThrownBy(() -> advertise()).isNotNull();
   }
 
   /*
@@ -28,11 +35,11 @@ public class JmdnsHomekitAdvertiserTest {
    * when changing discoverability causes advertising to be toggled.
    */
   @Test
-  void testSetDiscoverableAfterAdvertise() throws Exception {
+  public void testSetDiscoverableAfterAdvertise() throws Exception {
     subject.setDiscoverable(false);
     advertise();
     subject.setDiscoverable(true);
-    assertThat(getArgumentFromUnregister().getPropertyString("sf")).isEqualTo("1");
+    assertThat(getArgumentFromUnregister().getPropertyString("sf")).isEqualTo("0");
   }
 
   /*
@@ -40,11 +47,11 @@ public class JmdnsHomekitAdvertiserTest {
    * when changing the config index causes advertising to be toggled.
    */
   @Test
-  void testSetConfigurationIndex() throws Exception {
+  public void testSetConfigurationIndex() throws Exception {
     subject.setConfigurationIndex(1);
     advertise();
     subject.setConfigurationIndex(2);
-    assertThat(getArgumentFromUnregister().getPropertyString("c#")).isEqualTo("2");
+    assertThat(getArgumentFromUnregister().getPropertyString("c#")).isEqualTo("1");
   }
 
   private ServiceInfo getArgumentFromUnregister() {
@@ -54,6 +61,6 @@ public class JmdnsHomekitAdvertiserTest {
   }
 
   private void advertise() throws Exception {
-    subject.advertise("test", "00:00:00:00:00:00", 1234, 1, 1, "1");
+    subject.advertise("test", 1, "00:00:00:00:00:00", 1234, 1, "1");
   }
 }

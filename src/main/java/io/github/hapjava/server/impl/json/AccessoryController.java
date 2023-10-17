@@ -18,6 +18,7 @@ import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 
 public class AccessoryController {
 
@@ -41,7 +42,7 @@ public class AccessoryController {
       iidLookup.putAll(swapKeyAndValue(registry.getCharacteristics(accessory.getId())));
 
       for (Service service : servicesByInterfaceId.values()) {
-        serviceFutures.add(toJson(service, iidLookup));
+        serviceFutures.add(toJson(service, iidLookup, accessory.getPrimaryService() == service));
       }
 
       accessoryServiceFutures.put(accessory.getId(), serviceFutures);
@@ -64,15 +65,15 @@ public class AccessoryController {
               .add("services", serviceArrayBuilders.get(accessory.getId())));
     }
 
-    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-      Json.createWriter(baos)
-          .write(Json.createObjectBuilder().add("accessories", accessories).build());
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos)) {
+      jsonWriter.write(Json.createObjectBuilder().add("accessories", accessories).build());
       return new HapJsonResponse(baos.toByteArray());
     }
   }
 
-  private CompletableFuture<JsonObject> toJson(Service service, Map<Object, Integer> iidLookup)
-      throws Exception {
+  private CompletableFuture<JsonObject> toJson(
+      Service service, Map<Object, Integer> iidLookup, boolean isPrimary) throws Exception {
     String shortType =
         service.getType().replaceAll("^0*([0-9a-fA-F]+)-0000-1000-8000-0026BB765291$", "$1");
     JsonObjectBuilder builder =
@@ -102,7 +103,7 @@ public class AccessoryController {
                     .forEach(jsonLinkedServices::add);
                 builder.add("linked", jsonLinkedServices);
               }
-
+              builder.add("primary", isPrimary);
               return builder.build();
             });
   }

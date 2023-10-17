@@ -72,6 +72,12 @@ public abstract class BaseCharacteristic<T> implements Characteristic, Eventable
 
   @Override
   /** {@inheritDoc} */
+  public String getType() {
+    return type;
+  }
+
+  @Override
+  /** {@inheritDoc} */
   public final CompletableFuture<JsonObject> toJson(int iid) {
     return makeBuilder(iid).thenApply(builder -> builder.build());
   }
@@ -112,8 +118,8 @@ public abstract class BaseCharacteristic<T> implements Characteristic, Eventable
                       .add("iid", instanceId)
                       .add("type", shortType)
                       .add("perms", perms.build())
-                      .add("format", format)
-                      .add("description", description);
+                      .add("format", format);
+              if (shortType.length() == type.length()) builder.add("description", description);
               if (isReadable) setJsonValue(builder, value);
               return builder;
             });
@@ -125,15 +131,26 @@ public abstract class BaseCharacteristic<T> implements Characteristic, Eventable
     try {
       setValue(convert(jsonValue));
     } catch (Exception e) {
-      logger.warn("Error while setting JSON value", e);
+      logger.warn(
+          "Error while setting JSON value {} for characteristic {}",
+          jsonValue,
+          getClass().getName(),
+          e);
     }
   }
 
   /** {@inheritDoc} */
   @Override
   public void supplyValue(JsonObjectBuilder builder) {
+    CompletableFuture<T> futureValue = getValue();
+
+    if (futureValue == null) {
+      setJsonValue(builder, getDefault());
+      return;
+    }
+
     try {
-      setJsonValue(builder, getValue().get());
+      setJsonValue(builder, futureValue.get());
     } catch (InterruptedException | ExecutionException e) {
       logger.warn("Error retrieving value", e);
       setJsonValue(builder, getDefault());
@@ -143,13 +160,13 @@ public abstract class BaseCharacteristic<T> implements Characteristic, Eventable
   /** {@inheritDoc} */
   @Override
   public void subscribe(HomekitCharacteristicChangeCallback callback) {
-    subscriber.get().accept(callback);
+    subscriber.ifPresent(s -> s.accept(callback));
   }
 
   /** {@inheritDoc} */
   @Override
   public void unsubscribe() {
-    unsubscriber.get().run();
+    unsubscriber.ifPresent(u -> u.run());
   }
 
   /**
@@ -166,14 +183,14 @@ public abstract class BaseCharacteristic<T> implements Characteristic, Eventable
    * @param value the new value to set.
    * @throws Exception if the value cannot be set.
    */
-  protected abstract void setValue(T value) throws Exception;
+  public abstract void setValue(T value) throws Exception;
 
   /**
    * Retrieves the current value of the characteristic.
    *
    * @return a future that will complete with the current value.
    */
-  protected abstract CompletableFuture<T> getValue();
+  public abstract CompletableFuture<T> getValue();
 
   /**
    * Supplies a default value for the characteristic to send to connected clients when the real
@@ -181,7 +198,7 @@ public abstract class BaseCharacteristic<T> implements Characteristic, Eventable
    *
    * @return a sensible default value.
    */
-  protected abstract T getDefault();
+  public abstract T getDefault();
 
   /**
    * Writes the value key to the serialized characteristic

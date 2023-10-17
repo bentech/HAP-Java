@@ -1,3 +1,51 @@
+# HAP-Java 2.0.6
+* Several methods allowing library users to manipulate characteristics themselves
+* Allow library users to provider their own implementation of AccessoryInformationService
+* Fix ProgrammableSwitchEventEnum that has an incorrect value
+
+# HAP-Java 2.0.5
+* Implement List-Pairings method. Compatibility with new Home infrastructure from iOS 16.2?
+
+# HAP-Java 2.0.3
+* Avoid unnecessary forced disconnects. Library users should be updating the configuration index anyway.
+
+# HAP-Java 2.0.2
+ * Various minor stability issues for after an accessory has been removed.
+
+# HAP-Java 2.0.1
+## Fixes
+* Log accessory names instead of futures. [#150](https://github.com/hap-java/HAP-Java/issues/150)
+* Fix rotation speed data type (BREAKING API CHANGE). According to HAP specification it must be float
+* Close JsonWriters [#149](https://github.com/hap-java/HAP-Java/issues/149)
+* Fix UUID of HAP Version characteristic
+* Add Mute characteristic to Doorbell service
+
+## New  
+* New characteristics:
+  * Identifier
+  * Input Device Type 
+  * Input Source Type 
+  * Configured Name 
+  * Current Visibility State 
+  * Target Visibility State 
+  * Sleep Discovery Mode 
+  * Active Identifier 
+  * Closed Captions 
+  * Current Media State 
+  * Target Media State 
+  * Picture Mode
+  * Power Mode  
+  * Remote Key
+  * Volume Control Type
+  * Volume Selector
+  * AirPlay Enable
+  
+* New services
+  * Input Source
+  * Television
+  * Television Speaker
+  * Smart Speaker
+
 # HAP-Java 2.0.0
 * major refactoring to support optional characteristics
 * structure and names adapted to HAP spec structure and naming.

@@ -9,12 +9,11 @@ import io.github.hapjava.server.impl.crypto.EdsaSigner;
 import io.github.hapjava.server.impl.crypto.EdsaVerifier;
 import io.github.hapjava.server.impl.http.HttpRequest;
 import io.github.hapjava.server.impl.http.HttpResponse;
-import io.github.hapjava.server.impl.pairing.PairVerificationRequest.Stage1Request;
-import io.github.hapjava.server.impl.pairing.PairVerificationRequest.Stage2Request;
+import io.github.hapjava.server.impl.pairing.PairVerifyRequest.VerifyFinishRequest;
+import io.github.hapjava.server.impl.pairing.PairVerifyRequest.VerifyStartRequest;
 import io.github.hapjava.server.impl.pairing.TypeLengthValueUtils.DecodeResult;
 import io.github.hapjava.server.impl.pairing.TypeLengthValueUtils.Encoder;
 import io.github.hapjava.server.impl.responses.NotFoundResponse;
-import io.github.hapjava.server.impl.responses.OkResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import org.bouncycastle.crypto.digests.SHA512Digest;
@@ -23,9 +22,9 @@ import org.bouncycastle.crypto.params.HKDFParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class PairVerificationManager {
+public class PairVerifyManager {
 
-  private static final Logger logger = LoggerFactory.getLogger(PairVerificationManager.class);
+  private static final Logger logger = LoggerFactory.getLogger(PairVerifyManager.class);
   private static volatile SecureRandom secureRandom;
 
   private final HomekitAuthInfo authInfo;
@@ -36,26 +35,26 @@ public class PairVerificationManager {
   private byte[] publicKey;
   private byte[] sharedSecret;
 
-  public PairVerificationManager(HomekitAuthInfo authInfo, HomekitRegistry registry) {
+  public PairVerifyManager(HomekitAuthInfo authInfo, HomekitRegistry registry) {
     this.authInfo = authInfo;
     this.registry = registry;
   }
 
   public HttpResponse handle(HttpRequest rawRequest) throws Exception {
-    PairVerificationRequest request = PairVerificationRequest.of(rawRequest.getBody());
-    switch (request.getStage()) {
-      case ONE:
-        return stage1((Stage1Request) request);
+    PairVerifyRequest request = PairVerifyRequest.of(rawRequest.getBody());
+    switch (request.getState()) {
+      case 1:
+        return handleVerifyStartRequest((VerifyStartRequest) request);
 
-      case TWO:
-        return stage2((Stage2Request) request);
+      case 3:
+        return handleVerifyFinishRequest((VerifyFinishRequest) request);
 
       default:
         return new NotFoundResponse();
     }
   }
 
-  private HttpResponse stage1(Stage1Request request) throws Exception {
+  private HttpResponse handleVerifyStartRequest(VerifyStartRequest request) throws Exception {
     logger.trace("Starting pair verification for " + registry.getLabel());
     clientPublicKey = request.getClientPublicKey();
     publicKey = new byte[32];
@@ -96,7 +95,7 @@ public class PairVerificationManager {
     return new PairingResponse(encoder.toByteArray());
   }
 
-  private HttpResponse stage2(Stage2Request request) throws Exception {
+  private HttpResponse handleVerifyFinishRequest(VerifyFinishRequest request) throws Exception {
     ChachaDecoder chacha = new ChachaDecoder(hkdfKey, "PV-Msg03".getBytes(StandardCharsets.UTF_8));
     byte[] plaintext = chacha.decodeCiphertext(request.getAuthTagData(), request.getMessageData());
 
@@ -109,6 +108,10 @@ public class PairVerificationManager {
     byte[] clientLtpk =
         authInfo.getUserPublicKey(
             authInfo.getMac() + new String(clientUsername, StandardCharsets.UTF_8));
+    if (clientLtpk == null) {
+      logger.warn("Unknown user: {}", new String(clientUsername, StandardCharsets.UTF_8));
+      return new PairingResponse(4, ErrorCode.AUTHENTICATION);
+    }
 
     Encoder encoder = TypeLengthValueUtils.getEncoder();
     encoder.add(MessageType.STATE, (short) 4);
@@ -125,7 +128,7 @@ public class PairVerificationManager {
           createKey("Control-Read-Encryption-Key"));
     } else {
       logger.warn("Invalid signature. Could not pair " + registry.getLabel());
-      return new OkResponse(encoder.toByteArray());
+      return new PairingResponse(4, ErrorCode.AUTHENTICATION);
     }
   }
 
@@ -143,7 +146,7 @@ public class PairVerificationManager {
 
   private static SecureRandom getSecureRandom() {
     if (secureRandom == null) {
-      synchronized (PairVerificationManager.class) {
+      synchronized (PairVerifyManager.class) {
         if (secureRandom == null) {
           secureRandom = new SecureRandom();
         }

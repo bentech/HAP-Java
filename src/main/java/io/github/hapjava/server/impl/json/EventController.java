@@ -4,11 +4,12 @@ import io.github.hapjava.characteristics.EventableCharacteristic;
 import io.github.hapjava.server.impl.connections.PendingNotification;
 import io.github.hapjava.server.impl.http.HttpResponse;
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
+import java.util.List;
 import javax.json.Json;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
 
 public class EventController {
 
@@ -24,15 +25,16 @@ public class EventController {
 
     JsonObject data = Json.createObjectBuilder().add("characteristics", characteristics).build();
 
-    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-      Json.createWriter(baos).write(data);
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos)) {
+      jsonWriter.write(data);
       byte[] dataBytes = baos.toByteArray();
 
       return new EventResponse(dataBytes);
     }
   }
 
-  public HttpResponse getMessage(ArrayList<PendingNotification> notifications) throws Exception {
+  public HttpResponse getMessage(List<PendingNotification> notifications) throws Exception {
     JsonArrayBuilder characteristics = Json.createArrayBuilder();
 
     for (PendingNotification notification : notifications) {
@@ -44,9 +46,9 @@ public class EventController {
     }
 
     JsonObject data = Json.createObjectBuilder().add("characteristics", characteristics).build();
-
-    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-      Json.createWriter(baos).write(data);
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos)) {
+      jsonWriter.write(data);
       byte[] dataBytes = baos.toByteArray();
 
       return new EventResponse(dataBytes);

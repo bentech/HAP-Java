@@ -26,7 +26,7 @@ public abstract class EnumCharacteristic<T extends CharacteristicEnum>
     extends BaseCharacteristic<Integer> {
 
   private final T[] validValues;
-  Optional<Supplier<CompletableFuture<T>>> getter;
+  protected Optional<Supplier<CompletableFuture<T>>> getter;
   protected Optional<ExceptionalConsumer<T>> setter;
 
   /**
@@ -84,16 +84,44 @@ public abstract class EnumCharacteristic<T extends CharacteristicEnum>
     }
   }
 
-  @Override
-  protected CompletableFuture<Integer> getValue() {
+  /**
+   * @return the current value of this characteristic, or null if it has no value or can't be
+   *     fetched
+   */
+  public CompletableFuture<T> getEnumValue() {
     if (!getter.isPresent()) {
       return null;
     }
-    return getter.get().get().thenApply(T::getCode);
+    return getter.get().get();
   }
 
   @Override
-  protected void setValue(Integer value) throws Exception {
+  public CompletableFuture<Integer> getValue() {
+    if (!getter.isPresent()) {
+      return null;
+    }
+    return getter
+        .get()
+        .get()
+        .thenApply(
+            e -> {
+              if (e == null) {
+                return null;
+              }
+              return e.getCode();
+            });
+  }
+
+  public void setValue(T value) throws Exception {
+    if (!setter.isPresent()) {
+      return;
+    }
+
+    setter.get().accept(value);
+  }
+
+  @Override
+  public void setValue(Integer value) throws Exception {
     if (!setter.isPresent()) {
       return;
     }
@@ -102,7 +130,7 @@ public abstract class EnumCharacteristic<T extends CharacteristicEnum>
     if (validValues != null && value != null) {
       for (T valid : validValues) {
         if (valid.getCode() == value) {
-          setter.get().accept(valid);
+          setValue(valid);
           return;
         }
       }
@@ -111,11 +139,15 @@ public abstract class EnumCharacteristic<T extends CharacteristicEnum>
 
   /** {@inheritDoc} */
   @Override
-  protected Integer getDefault() {
+  public Integer getDefault() {
     // as default return first item from valid values
     if (validValues != null && validValues.length > 0) {
       return validValues[0].getCode();
     }
     return 0;
+  }
+
+  public T[] getValidValues() {
+    return validValues;
   }
 }

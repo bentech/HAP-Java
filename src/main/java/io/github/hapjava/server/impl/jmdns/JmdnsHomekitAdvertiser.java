@@ -28,7 +28,8 @@ public class JmdnsHomekitAdvertiser {
   private String setupId;
   private int port;
   private int configurationIndex;
-  private int stateIndex;
+  private ServiceInfo serviceInfo;
+  private int category;
 
   public JmdnsHomekitAdvertiser(JmDNS jmdns) {
     this.jmdns = jmdns;
@@ -39,12 +40,16 @@ public class JmdnsHomekitAdvertiser {
   }
 
   public synchronized void advertise(
-      String label, String mac, int port, int configurationIndex, int stateIndex, String setupId)
+      String label, int category, String mac, int port, int configurationIndex, String setupId)
       throws Exception {
+    if (isAdvertising) {
+      throw new IllegalStateException("HomeKit advertiser is already running");
+    }
     this.label = label;
     this.mac = mac;
     this.port = port;
     this.setupId = setupId;
+    this.category = category;
     this.configurationIndex = configurationIndex;
     this.stateIndex = stateIndex;
 
@@ -85,6 +90,17 @@ public class JmdnsHomekitAdvertiser {
     }
   }
 
+  public synchronized void setMac(String mac) throws IOException {
+    if (this.mac != mac) {
+      this.mac = mac;
+      if (isAdvertising) {
+        logger.trace("Re-creating service due to change in mac to " + mac);
+        unregisterService();
+        registerService();
+      }
+    }
+  }
+
   public synchronized void setConfigurationIndex(int revision) throws IOException {
     if (this.configurationIndex != revision) {
       this.configurationIndex = revision;
@@ -115,10 +131,10 @@ public class JmdnsHomekitAdvertiser {
     props.put("md", label);
     props.put("sh", generateSHA512Hash(setupId + mac));
     props.put("c#", Integer.toString(configurationIndex));
-    props.put("s#", Integer.toString(stateIndex));
     props.put("ff", "0");
-    props.put("ci", "1");
-    props.put("pv", PROTOCOL_VERSION_BONJOUR);
+    props.put("ci", Integer.toString(category));
+    props.put("pv", "1.1");
+
     return ServiceInfo.create(SERVICE_TYPE, label, port, 1, 1, props);
   }
 }

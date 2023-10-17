@@ -120,6 +120,15 @@ public class HomekitServer {
       return new HomekitStandaloneAccessoryServer(accessory, http, localAddress, authInfo);
     }
   }
+  public HomekitStandaloneAccessoryServer createStandaloneAccessory(
+      HomekitAuthInfo authInfo, HomekitAccessory accessory, int category)
+      throws IOException, ExecutionException, InterruptedException {
+    if (jmdns != null) {
+      return new HomekitStandaloneAccessoryServer(accessory, http, jmdns, authInfo, category);
+    } else {
+      return new HomekitStandaloneAccessoryServer(accessory, http, localAddress, authInfo, category);
+    }
+  }
 
   /**
    * Creates a bridge accessory, capable of holding multiple child accessories. This has the
@@ -142,6 +151,7 @@ public class HomekitServer {
   public HomekitRoot createBridge(
       HomekitAuthInfo authInfo,
       String label,
+      int category,
       String manufacturer,
       String model,
       String serialNumber,
@@ -150,9 +160,9 @@ public class HomekitServer {
       throws IOException {
     HomekitRoot root;
     if (jmdns != null) {
-      root = new HomekitRoot(label, http, jmdns, authInfo);
+      root = new HomekitRoot(label, category, http, jmdns, authInfo);
     } else {
-      root = new HomekitRoot(label, http, localAddress, authInfo);
+      root = new HomekitRoot(label, category, http, localAddress, authInfo);
     }
     root.addAccessory(
         new HomekitBridge(

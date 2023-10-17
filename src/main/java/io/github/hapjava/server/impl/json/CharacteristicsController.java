@@ -51,17 +51,17 @@ public class CharacteristicsController {
           characteristics.add(characteristic.add("aid", aid).add("iid", iid).build());
         } else {
           logger.warn(
-              "Accessory " + aid + " does not have characteristic " + iid + "Request: " + uri);
+              "Accessory " + aid + " does not have characteristic " + iid + ". Request: " + uri);
         }
       } else {
         logger.warn(
             "Accessory " + aid + " has no characteristics or does not exist. Request: " + uri);
       }
     }
-    try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-      Json.createWriter(baos)
-          .write(
-              Json.createObjectBuilder().add("characteristics", characteristics.build()).build());
+    try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JsonWriter jsonWriter = Json.createWriter(baos)) {
+      jsonWriter.write(
+          Json.createObjectBuilder().add("characteristics", characteristics.build()).build());
       return new HapJsonResponse(baos.toByteArray());
     }
   }
@@ -77,7 +77,16 @@ public class CharacteristicsController {
           JsonObject jsonCharacteristic = (JsonObject) value;
           long aid = jsonCharacteristic.getJsonNumber("aid").longValue();
           int iid = jsonCharacteristic.getInt("iid");
-          Characteristic characteristic = registry.getCharacteristics(aid).get(iid);
+          Map<Integer, Characteristic> accessory = registry.getCharacteristics(aid);
+          if (accessory.isEmpty()) {
+            logger.warn("Accessory {} has no characteristics or does not exist.", aid);
+            return new HapJsonNoContentResponse();
+          }
+          Characteristic characteristic = accessory.get(iid);
+          if (characteristic == null) {
+            logger.warn("Accessory {} does not have characteristic {}.", aid, iid);
+            return new HapJsonNoContentResponse();
+          }
 
           if (jsonCharacteristic.containsKey("value")) {
             characteristic.setValue(jsonCharacteristic.get("value"));
