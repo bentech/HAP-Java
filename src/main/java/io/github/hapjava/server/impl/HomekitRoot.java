@@ -38,6 +38,7 @@ public class HomekitRoot {
   private int configurationIndex = 1;
   private int nestedBatches = 0;
   private boolean madeChanges = false;
+  private int stateIndex = 1;
 
   HomekitRoot(
       String label, HomekitWebHandler webHandler, InetAddress host, HomekitAuthInfo authInfo)
@@ -94,13 +95,17 @@ public class HomekitRoot {
    * completeUpdateBatch in order to publish all accumulated changes.
    */
   public synchronized void batchUpdate() {
-    if (this.nestedBatches == 0) madeChanges = false;
+    if (this.nestedBatches == 0) {
+      madeChanges = false;
+    }
     ++this.nestedBatches;
   }
 
   /** Publish accumulated accessory changes since batchUpdate() was called. */
   public synchronized void completeUpdateBatch() {
-    if (--this.nestedBatches == 0 && madeChanges) registry.reset();
+    if (--this.nestedBatches == 0 && madeChanges) {
+      registry.reset();
+    }
   }
 
   /**
@@ -176,7 +181,8 @@ public class HomekitRoot {
                     authInfo.getMac(),
                     port,
                     configurationIndex,
-                    authInfo.getSetupId());
+                    authInfo.getSetupId(),
+                    this.stateIndex);
               } catch (Exception e) {
                 throw new RuntimeException(e);
               }
@@ -232,7 +238,14 @@ public class HomekitRoot {
     }
   }
 
-  HomekitRegistry getRegistry() {
+  public void setStateIndex(int stateIndex) throws IOException {
+    this.stateIndex = stateIndex;
+    if (this.started) {
+      advertiser.setStateIndex(stateIndex);
+    }
+  }
+
+  public HomekitRegistry getRegistry() {
     return registry;
   }
 }

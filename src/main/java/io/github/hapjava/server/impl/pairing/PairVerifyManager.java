@@ -14,6 +14,7 @@ import io.github.hapjava.server.impl.pairing.PairVerifyRequest.VerifyStartReques
 import io.github.hapjava.server.impl.pairing.TypeLengthValueUtils.DecodeResult;
 import io.github.hapjava.server.impl.pairing.TypeLengthValueUtils.Encoder;
 import io.github.hapjava.server.impl.responses.NotFoundResponse;
+import io.github.hapjava.server.impl.responses.OkResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import org.bouncycastle.crypto.digests.SHA512Digest;

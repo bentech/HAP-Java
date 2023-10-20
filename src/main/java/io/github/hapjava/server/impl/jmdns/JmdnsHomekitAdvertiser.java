@@ -1,6 +1,5 @@
 package io.github.hapjava.server.impl.jmdns;
 
-import static io.github.hapjava.server.impl.HomekitServer.PROTOCOL_VERSION_BONJOUR;
 import static io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils.generateSHA512Hash;
 
 import java.io.IOException;
@@ -30,6 +29,7 @@ public class JmdnsHomekitAdvertiser {
   private int configurationIndex;
   private ServiceInfo serviceInfo;
   private int category;
+  private int stateIndex = 1;
 
   public JmdnsHomekitAdvertiser(JmDNS jmdns) {
     this.jmdns = jmdns;
@@ -40,7 +40,13 @@ public class JmdnsHomekitAdvertiser {
   }
 
   public synchronized void advertise(
-      String label, int category, String mac, int port, int configurationIndex, String setupId)
+      String label,
+      int category,
+      String mac,
+      int port,
+      int configurationIndex,
+      String setupId,
+      int stateIndex)
       throws Exception {
     if (isAdvertising) {
       throw new IllegalStateException("HomeKit advertiser is already running");
@@ -131,6 +137,7 @@ public class JmdnsHomekitAdvertiser {
     props.put("md", label);
     props.put("sh", generateSHA512Hash(setupId + mac));
     props.put("c#", Integer.toString(configurationIndex));
+    props.put("s#", Integer.toString(stateIndex));
     props.put("ff", "0");
     props.put("ci", Integer.toString(category));
     props.put("pv", "1.1");

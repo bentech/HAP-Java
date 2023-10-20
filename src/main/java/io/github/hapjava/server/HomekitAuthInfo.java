@@ -4,7 +4,7 @@ import io.github.hapjava.server.impl.HomekitServer;
 import io.github.hapjava.server.impl.crypto.HAPSetupCodeUtils;
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 
 /**
  * Authentication info that must be provided when constructing a new {@link HomekitServer}. You will
@@ -99,7 +99,7 @@ public interface HomekitAuthInfo {
    * @return the previously stored list of users.
    */
   default Collection<String> listUsers() {
-    return List.of();
+    return Collections.EMPTY_LIST;
   }
 
   /**

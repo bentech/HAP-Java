@@ -21,7 +21,7 @@ public class HomekitRegistry {
 
   private final String label;
   private final SubscriptionManager subscriptions;
-  private final Map<Integer, HomekitAccessory> accessories;
+  private final Map<Long, HomekitAccessory> accessories;
   private final Map<HomekitAccessory, Map<Integer, Service>> services = new HashMap<>();
   private final Map<HomekitAccessory, Map<Integer, Characteristic>> characteristics =
       new HashMap<>();

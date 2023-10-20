@@ -38,7 +38,7 @@ public class PairSetupManager {
         return new UnauthorizedResponse();
       } else {
         try {
-          return srpHandler.step2((PairSetupRequest.Stage2Request) req);
+          return srpHandler.handle(req);
         } catch (Exception e) {
           srpHandler = null; // You don't get to try again - need a new key
           logger.warn("Exception encountered while processing SRP Verify Request", e);

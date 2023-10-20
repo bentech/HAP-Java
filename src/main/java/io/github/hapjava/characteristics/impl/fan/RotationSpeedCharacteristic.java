@@ -30,7 +30,7 @@ public class RotationSpeedCharacteristic extends FloatCharacteristic
         minValue,
         maxValue,
         minStep,
-        "%",
+        "percentage",
         Optional.of(getter),
         Optional.of(setter),
         Optional.of(subscriber),

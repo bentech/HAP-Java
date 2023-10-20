@@ -1,5 +1,8 @@
 package io.github.hapjava.server.impl;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -14,9 +17,8 @@ import io.github.hapjava.server.HomekitWebHandler;
 import io.github.hapjava.server.impl.http.HomekitClientConnectionFactory;
 import io.github.hapjava.server.impl.jmdns.JmdnsHomekitAdvertiser;
 import java.util.concurrent.CompletableFuture;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class HomekitRootTest {
 
@@ -31,10 +33,10 @@ public class HomekitRootTest {
 
   private static final String LABEL = "Test Label";
 
-  @Before
+  @BeforeEach
   public void setup() throws Exception {
     accessory = mock(HomekitAccessory.class);
-    when(accessory.getId()).thenReturn(2);
+    when(accessory.getId()).thenReturn(2l);
     webHandler = mock(HomekitWebHandler.class);
     when(webHandler.start(any())).thenReturn(CompletableFuture.completedFuture(PORT));
     advertiser = mock(JmdnsHomekitAdvertiser.class);
@@ -46,18 +48,18 @@ public class HomekitRootTest {
   @Test
   public void verifyRegistryAdded() throws Exception {
     root.addAccessory(accessory);
-    Assert.assertTrue(
-        "Registry does not contain accessory",
-        root.getRegistry().getAccessories().contains(accessory));
+    assertTrue(
+        root.getRegistry().getAccessories().contains(accessory),
+        "Registry does not contain accessory");
   }
 
   @Test
   public void verifyRegistryRemoved() throws Exception {
     root.addAccessory(accessory);
     root.removeAccessory(accessory);
-    Assert.assertFalse(
-        "Registry still contains accessory",
-        root.getRegistry().getAccessories().contains(accessory));
+    assertFalse(
+        root.getRegistry().getAccessories().contains(accessory),
+        "Registry still contains accessory");
   }
 
   @Test
@@ -80,7 +82,7 @@ public class HomekitRootTest {
     when(authInfo.getSetupId()).thenReturn(SETUPID);
 
     root.start();
-    verify(advertiser).advertise(eq(LABEL), eq(1), eq(mac), eq(PORT), eq(1), eq(SETUPID));
+    verify(advertiser).advertise(eq(LABEL), eq(1), eq(mac), eq(PORT), eq(1), eq(SETUPID), eq(1));
   }
 
   @Test
@@ -105,9 +107,13 @@ public class HomekitRootTest {
     verify(webHandler, never()).resetConnections();
   }
 
-  @Test(expected = IndexOutOfBoundsException.class)
+  @Test
   public void testAddIndexOneAccessory() throws Exception {
-    when(accessory.getId()).thenReturn(1);
-    root.addAccessory(accessory);
+    assertThrows(
+        IndexOutOfBoundsException.class,
+        () -> {
+          when(accessory.getId()).thenReturn(1l);
+          root.addAccessory(accessory);
+        });
   }
 }

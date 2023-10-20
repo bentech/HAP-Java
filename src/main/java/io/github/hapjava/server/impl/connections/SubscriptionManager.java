@@ -22,9 +22,10 @@ public class SubscriptionManager {
 
   private static class ConnectionsWithIds {
     Set<HomekitClientConnection> connections;
-    int aid, iid;
+    long aid;
+    int iid;
 
-    ConnectionsWithIds(int aid, int iid) {
+    ConnectionsWithIds(long aid, int iid) {
       this.aid = aid;
       this.iid = iid;
       this.connections = new HashSet<>();
@@ -139,7 +140,7 @@ public class SubscriptionManager {
     pendingNotifications.clear();
   }
 
-  public synchronized void publish(int accessoryId, int iid, EventableCharacteristic changed) {
+  public synchronized void publish(long accessoryId, int iid, EventableCharacteristic changed) {
     final ConnectionsWithIds subscribers = subscriptions.get(changed);
     if (subscribers == null || subscribers.connections.isEmpty()) {
       LOGGER.trace("No subscribers to characteristic {} at accessory {} ", changed, accessoryId);
@@ -233,7 +234,7 @@ public class SubscriptionManager {
     subscriptions.putAll(newSubscriptions);
   }
 
-  private void subscribe(int aid, int iid, EventableCharacteristic characteristic) {
+  private void subscribe(long aid, int iid, EventableCharacteristic characteristic) {
     characteristic.subscribe(
         () -> {
           publish(aid, iid, characteristic);

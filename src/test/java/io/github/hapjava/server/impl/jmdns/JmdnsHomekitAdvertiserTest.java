@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 public class JmdnsHomekitAdvertiserTest {
@@ -18,7 +18,7 @@ public class JmdnsHomekitAdvertiserTest {
   JmdnsHomekitAdvertiser subject;
   JmDNS jmdns;
 
-  @Before
+  @BeforeEach
   public void setup() throws UnknownHostException, IOException {
     jmdns = mock(JmDNS.class);
     subject = new JmdnsHomekitAdvertiser(jmdns);
@@ -39,7 +39,7 @@ public class JmdnsHomekitAdvertiserTest {
     subject.setDiscoverable(false);
     advertise();
     subject.setDiscoverable(true);
-    assertThat(getArgumentFromUnregister().getPropertyString("sf")).isEqualTo("0");
+    assertThat(getArgumentFromUnregister().getPropertyString("sf")).isEqualTo("1");
   }
 
   /*
@@ -51,7 +51,7 @@ public class JmdnsHomekitAdvertiserTest {
     subject.setConfigurationIndex(1);
     advertise();
     subject.setConfigurationIndex(2);
-    assertThat(getArgumentFromUnregister().getPropertyString("c#")).isEqualTo("1");
+    assertThat(getArgumentFromUnregister().getPropertyString("c#")).isEqualTo("2");
   }
 
   private ServiceInfo getArgumentFromUnregister() {
@@ -61,6 +61,6 @@ public class JmdnsHomekitAdvertiserTest {
   }
 
   private void advertise() throws Exception {
-    subject.advertise("test", 1, "00:00:00:00:00:00", 1234, 1, "1");
+    subject.advertise("test", 1, "00:00:00:00:00:00", 1234, 1, "1", 1);
   }
 }

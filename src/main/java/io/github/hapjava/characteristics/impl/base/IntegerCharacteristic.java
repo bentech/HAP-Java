@@ -56,6 +56,32 @@ public abstract class IntegerCharacteristic extends BaseCharacteristic<Integer> 
     this.setter = setter;
   }
 
+  public IntegerCharacteristic(
+      String type,
+      String description,
+      int minValue,
+      int maxValue,
+      String format,
+      String unit,
+      Optional<Supplier<CompletableFuture<Integer>>> getter,
+      Optional<ExceptionalConsumer<Integer>> setter,
+      Optional<Consumer<HomekitCharacteristicChangeCallback>> subscriber,
+      Optional<Runnable> unsubscriber) {
+    super(
+        type,
+        format,
+        description,
+        getter.isPresent(),
+        setter.isPresent(),
+        subscriber,
+        unsubscriber);
+    this.minValue = minValue;
+    this.maxValue = maxValue;
+    this.unit = unit;
+    this.getter = getter;
+    this.setter = setter;
+  }
+
   /** {@inheritDoc} */
   @Override
   protected CompletableFuture<JsonObjectBuilder> makeBuilder(int iid) {
@@ -77,7 +103,9 @@ public abstract class IntegerCharacteristic extends BaseCharacteristic<Integer> 
 
   @Override
   public void setValue(Integer value) throws Exception {
-    if (setter.isPresent()) setter.get().accept(value);
+    if (setter.isPresent()) {
+      setter.get().accept(value);
+    }
   }
 
   /** {@inheritDoc} */
