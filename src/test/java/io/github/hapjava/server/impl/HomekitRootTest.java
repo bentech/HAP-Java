@@ -15,7 +15,7 @@ import io.github.hapjava.server.HomekitAccessoryCategories;
 import io.github.hapjava.server.HomekitAuthInfo;
 import io.github.hapjava.server.HomekitWebHandler;
 import io.github.hapjava.server.impl.http.HomekitClientConnectionFactory;
-import io.github.hapjava.server.impl.jmdns.JmdnsHomekitAdvertiser;
+import io.github.hapjava.server.impl.jmdns.MdnsHomekitAdvertiser;
 import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ public class HomekitRootTest {
   private HomekitAccessory accessory;
   private HomekitRoot root;
   private HomekitWebHandler webHandler;
-  private JmdnsHomekitAdvertiser advertiser;
+  private MdnsHomekitAdvertiser advertiser;
   private HomekitAuthInfo authInfo;
 
   private static final int PORT = 12345;
@@ -39,7 +39,7 @@ public class HomekitRootTest {
     when(accessory.getId()).thenReturn(2l);
     webHandler = mock(HomekitWebHandler.class);
     when(webHandler.start(any())).thenReturn(CompletableFuture.completedFuture(PORT));
-    advertiser = mock(JmdnsHomekitAdvertiser.class);
+    advertiser = mock(MdnsHomekitAdvertiser.class);
     authInfo = mock(HomekitAuthInfo.class);
     root =
         new HomekitRoot(LABEL, HomekitAccessoryCategories.OTHER, webHandler, authInfo, advertiser);

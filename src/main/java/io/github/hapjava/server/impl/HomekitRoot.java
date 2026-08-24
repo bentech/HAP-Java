@@ -7,10 +7,10 @@ import io.github.hapjava.server.HomekitAuthInfo;
 import io.github.hapjava.server.HomekitWebHandler;
 import io.github.hapjava.server.impl.connections.HomekitClientConnectionFactoryImpl;
 import io.github.hapjava.server.impl.connections.SubscriptionManager;
-import io.github.hapjava.server.impl.jmdns.JmdnsHomekitAdvertiser;
+import io.github.hapjava.server.impl.jmdns.MdnsHomekitAdvertiser;
+import io.github.hapjava.server.impl.mdns.MdnsPublisher;
 import java.io.IOException;
 import java.net.InetAddress;
-import javax.jmdns.JmDNS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +27,7 @@ public class HomekitRoot {
 
   private static final Logger logger = LoggerFactory.getLogger(HomekitRoot.class);
   private static final int DEFAULT_ACCESSORY_CATEGORY = HomekitAccessoryCategories.OTHER;
-  private final JmdnsHomekitAdvertiser advertiser;
+  private final MdnsHomekitAdvertiser advertiser;
   private final HomekitWebHandler webHandler;
   private final HomekitAuthInfo authInfo;
   private final String label;
@@ -43,7 +43,7 @@ public class HomekitRoot {
   HomekitRoot(
       String label, HomekitWebHandler webHandler, InetAddress host, HomekitAuthInfo authInfo)
       throws IOException {
-    this(label, DEFAULT_ACCESSORY_CATEGORY, webHandler, authInfo, new JmdnsHomekitAdvertiser(host));
+    this(label, DEFAULT_ACCESSORY_CATEGORY, webHandler, authInfo, new MdnsHomekitAdvertiser(host));
   }
 
   HomekitRoot(
@@ -53,7 +53,7 @@ public class HomekitRoot {
       InetAddress host,
       HomekitAuthInfo authInfo)
       throws IOException {
-    this(label, category, webHandler, authInfo, new JmdnsHomekitAdvertiser(host));
+    this(label, category, webHandler, authInfo, new MdnsHomekitAdvertiser(host));
   }
 
   HomekitRoot(
@@ -61,7 +61,7 @@ public class HomekitRoot {
       int category,
       HomekitWebHandler webHandler,
       HomekitAuthInfo authInfo,
-      JmdnsHomekitAdvertiser advertiser)
+      MdnsHomekitAdvertiser advertiser)
       throws IOException {
     this.advertiser = advertiser;
     this.webHandler = webHandler;
@@ -75,16 +75,16 @@ public class HomekitRoot {
       String label,
       int category,
       HomekitWebHandler webHandler,
-      JmDNS jmdns,
+      MdnsPublisher mdns,
       HomekitAuthInfo authInfo)
       throws IOException {
-    this(label, category, webHandler, authInfo, new JmdnsHomekitAdvertiser(jmdns));
+    this(label, category, webHandler, authInfo, new MdnsHomekitAdvertiser(mdns));
   }
 
-  HomekitRoot(String label, HomekitWebHandler webHandler, JmDNS jmdns, HomekitAuthInfo authInfo)
+  HomekitRoot(
+      String label, HomekitWebHandler webHandler, MdnsPublisher mdns, HomekitAuthInfo authInfo)
       throws IOException {
-    this(
-        label, DEFAULT_ACCESSORY_CATEGORY, webHandler, authInfo, new JmdnsHomekitAdvertiser(jmdns));
+    this(label, DEFAULT_ACCESSORY_CATEGORY, webHandler, authInfo, new MdnsHomekitAdvertiser(mdns));
   }
 
   /**

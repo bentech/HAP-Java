@@ -7,7 +7,7 @@ import io.github.hapjava.server.impl.crypto.ChachaEncoder;
 import io.github.hapjava.server.impl.http.HomekitClientConnection;
 import io.github.hapjava.server.impl.http.HttpRequest;
 import io.github.hapjava.server.impl.http.HttpResponse;
-import io.github.hapjava.server.impl.jmdns.JmdnsHomekitAdvertiser;
+import io.github.hapjava.server.impl.jmdns.MdnsHomekitAdvertiser;
 import io.github.hapjava.server.impl.pairing.UpgradeResponse;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -38,7 +38,7 @@ class ConnectionImpl implements HomekitClientConnection {
       HomekitRegistry registry,
       Consumer<HttpResponse> outOfBandMessageCallback,
       SubscriptionManager subscriptions,
-      JmdnsHomekitAdvertiser advertiser) {
+      MdnsHomekitAdvertiser advertiser) {
     httpSession = new HttpSession(authInfo, registry, subscriptions, this, advertiser);
     this.outOfBandMessageCallback = outOfBandMessageCallback;
     this.subscriptions = subscriptions;

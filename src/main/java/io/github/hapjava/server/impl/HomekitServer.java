@@ -3,12 +3,12 @@ package io.github.hapjava.server.impl;
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.server.HomekitAuthInfo;
 import io.github.hapjava.server.impl.http.impl.HomekitHttpServer;
+import io.github.hapjava.server.impl.mdns.MdnsPublisher;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.security.InvalidAlgorithmParameterException;
 import java.util.concurrent.ExecutionException;
-import javax.jmdns.JmDNS;
 
 /**
  * The main entry point for hap-java. Creating an instance of this class will listen for HomeKit
@@ -32,7 +32,7 @@ public class HomekitServer {
 
   private final HomekitHttpServer http;
   private final InetAddress localAddress;
-  private final JmDNS jmdns;
+  private final MdnsPublisher mdns;
 
   /**
    * Constructor. Contains an argument indicating the number of threads to use in the http server.
@@ -46,22 +46,22 @@ public class HomekitServer {
    */
   public HomekitServer(InetAddress localAddress, int port, int nThreads) throws IOException {
     this.localAddress = localAddress;
-    this.jmdns = null;
+    this.mdns = null;
     http = new HomekitHttpServer(localAddress, port, nThreads);
   }
 
   /**
    * Constructor
    *
-   * @param jmdns mdns service to register with
+   * @param mdns mDNS publisher to register with
    * @param port local port to bind to
    * @param nThreads number of threads to use in the http server
    * @throws IOException when the server cannot bind to the supplied port
    */
-  public HomekitServer(JmDNS jmdns, int port, int nThreads) throws IOException {
-    this.jmdns = jmdns;
+  public HomekitServer(MdnsPublisher mdns, int port, int nThreads) throws IOException {
+    this.mdns = mdns;
     this.localAddress = null;
-    http = new HomekitHttpServer(jmdns.getInetAddress(), port, nThreads);
+    http = new HomekitHttpServer(mdns.getInetAddress(), port, nThreads);
   }
 
   /**
@@ -78,12 +78,12 @@ public class HomekitServer {
   /**
    * Constructor
    *
-   * @param jmdns mdns service to register with
+   * @param mdns mDNS publisher to register with
    * @param port local port to bind to
    * @throws IOException when the server cannot bind to the supplied port
    */
-  public HomekitServer(JmDNS jmdns, int port) throws IOException {
-    this(jmdns, port, Runtime.getRuntime().availableProcessors());
+  public HomekitServer(MdnsPublisher mdns, int port) throws IOException {
+    this(mdns, port, Runtime.getRuntime().availableProcessors());
   }
   /**
    * Constructor
@@ -114,8 +114,8 @@ public class HomekitServer {
   public HomekitStandaloneAccessoryServer createStandaloneAccessory(
       HomekitAuthInfo authInfo, HomekitAccessory accessory)
       throws IOException, ExecutionException, InterruptedException {
-    if (jmdns != null) {
-      return new HomekitStandaloneAccessoryServer(accessory, http, jmdns, authInfo);
+    if (mdns != null) {
+      return new HomekitStandaloneAccessoryServer(accessory, http, mdns, authInfo);
     } else {
       return new HomekitStandaloneAccessoryServer(accessory, http, localAddress, authInfo);
     }
@@ -124,8 +124,8 @@ public class HomekitServer {
   public HomekitStandaloneAccessoryServer createStandaloneAccessory(
       HomekitAuthInfo authInfo, HomekitAccessory accessory, int category)
       throws IOException, ExecutionException, InterruptedException {
-    if (jmdns != null) {
-      return new HomekitStandaloneAccessoryServer(accessory, http, jmdns, authInfo, category);
+    if (mdns != null) {
+      return new HomekitStandaloneAccessoryServer(accessory, http, mdns, authInfo, category);
     } else {
       return new HomekitStandaloneAccessoryServer(
           accessory, http, localAddress, authInfo, category);
@@ -161,8 +161,8 @@ public class HomekitServer {
       String hardwareRevision)
       throws IOException {
     HomekitRoot root;
-    if (jmdns != null) {
-      root = new HomekitRoot(label, category, http, jmdns, authInfo);
+    if (mdns != null) {
+      root = new HomekitRoot(label, category, http, mdns, authInfo);
     } else {
       root = new HomekitRoot(label, category, http, localAddress, authInfo);
     }

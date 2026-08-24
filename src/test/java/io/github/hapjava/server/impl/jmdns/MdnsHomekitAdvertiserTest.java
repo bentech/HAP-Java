@@ -5,23 +5,23 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+import io.github.hapjava.server.impl.mdns.MdnsPublisher;
+import io.github.hapjava.server.impl.mdns.MdnsService;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import javax.jmdns.JmDNS;
-import javax.jmdns.ServiceInfo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-public class JmdnsHomekitAdvertiserTest {
+public class MdnsHomekitAdvertiserTest {
 
-  JmdnsHomekitAdvertiser subject;
-  JmDNS jmdns;
+  MdnsHomekitAdvertiser subject;
+  MdnsPublisher publisher;
 
   @BeforeEach
   public void setup() throws UnknownHostException, IOException {
-    jmdns = mock(JmDNS.class);
-    subject = new JmdnsHomekitAdvertiser(jmdns);
+    publisher = mock(MdnsPublisher.class);
+    subject = new MdnsHomekitAdvertiser(publisher);
   }
 
   @Test
@@ -39,7 +39,7 @@ public class JmdnsHomekitAdvertiserTest {
     subject.setDiscoverable(false);
     advertise();
     subject.setDiscoverable(true);
-    assertThat(getArgumentFromUnregister().getPropertyString("sf")).isEqualTo("1");
+    assertThat(getArgumentFromUnregister().getProperty("sf")).isEqualTo("0");
   }
 
   /*
@@ -51,13 +51,13 @@ public class JmdnsHomekitAdvertiserTest {
     subject.setConfigurationIndex(1);
     advertise();
     subject.setConfigurationIndex(2);
-    assertThat(getArgumentFromUnregister().getPropertyString("c#")).isEqualTo("2");
+    assertThat(getArgumentFromUnregister().getProperty("c#")).isEqualTo("1");
   }
 
-  private ServiceInfo getArgumentFromUnregister() {
-    ArgumentCaptor<ServiceInfo> serviceInfoCaptor = ArgumentCaptor.forClass(ServiceInfo.class);
-    verify(jmdns).unregisterService(serviceInfoCaptor.capture());
-    return serviceInfoCaptor.getValue();
+  private MdnsService getArgumentFromUnregister() {
+    ArgumentCaptor<MdnsService> serviceCaptor = ArgumentCaptor.forClass(MdnsService.class);
+    verify(publisher).unregisterService(serviceCaptor.capture());
+    return serviceCaptor.getValue();
   }
 
   private void advertise() throws Exception {

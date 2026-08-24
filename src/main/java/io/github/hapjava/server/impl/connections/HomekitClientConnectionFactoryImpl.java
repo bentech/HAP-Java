@@ -5,7 +5,7 @@ import io.github.hapjava.server.impl.HomekitRegistry;
 import io.github.hapjava.server.impl.http.HomekitClientConnection;
 import io.github.hapjava.server.impl.http.HomekitClientConnectionFactory;
 import io.github.hapjava.server.impl.http.HttpResponse;
-import io.github.hapjava.server.impl.jmdns.JmdnsHomekitAdvertiser;
+import io.github.hapjava.server.impl.jmdns.MdnsHomekitAdvertiser;
 import java.util.function.Consumer;
 
 public class HomekitClientConnectionFactoryImpl implements HomekitClientConnectionFactory {
@@ -13,13 +13,13 @@ public class HomekitClientConnectionFactoryImpl implements HomekitClientConnecti
   private final HomekitAuthInfo authInfo;
   private final HomekitRegistry registry;
   private final SubscriptionManager subscriptions;
-  private final JmdnsHomekitAdvertiser advertiser;
+  private final MdnsHomekitAdvertiser advertiser;
 
   public HomekitClientConnectionFactoryImpl(
       HomekitAuthInfo authInfo,
       HomekitRegistry registry,
       SubscriptionManager subscriptions,
-      JmdnsHomekitAdvertiser advertiser) {
+      MdnsHomekitAdvertiser advertiser) {
     this.registry = registry;
     this.authInfo = authInfo;
     this.subscriptions = subscriptions;
