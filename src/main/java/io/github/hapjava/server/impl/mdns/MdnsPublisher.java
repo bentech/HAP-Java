@@ -422,8 +422,8 @@ public class MdnsPublisher implements Closeable {
     return left.equalsIgnoreCase(right);
   }
 
-  private static String normalizeHostName(String value) {
-    String name = value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
+  static String normalizeHostName(String value) {
+    String name = value == null ? "" : value.trim().toLowerCase(Locale.ROOT).replace(' ', '-');
     if (name.endsWith(".")) {
       name = name.substring(0, name.length() - 1);
     }

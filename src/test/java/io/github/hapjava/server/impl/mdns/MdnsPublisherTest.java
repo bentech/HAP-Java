@@ -33,6 +33,11 @@ public class MdnsPublisherTest {
   }
 
   @Test
+  public void replacesSpacesInPublishedHostNameWithHyphens() {
+    assertThat(MdnsPublisher.normalizeHostName("My Rako Hub")).isEqualTo("my-rako-hub.local.");
+  }
+
+  @Test
   public void ignoresAllIncomingMdnsResponses() throws Exception {
     byte[] packet = query("printer.local.", 1);
     packet[2] = (byte) 0x84;
